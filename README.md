@@ -45,8 +45,10 @@ And it's easy.
 Yep, but now I need a staging environment and a testing environment, so I add
 other heroku repositories that I aptly call:
 
-> this-really-long-app-name-that-is-used-as-a-demo
-> this-really-long-app-name-draft
+```
+this-really-long-app-name-that-is-used-as-a-demo
+this-really-long-app-name-draft
+```
 
 Now all my heroku commands look like:
 
@@ -63,9 +65,11 @@ And, let's be frank, that sucks even when I don't have to chain these commands.
 Now, if you're like me, you've probably named your various heroku remotes in a
 more sensible way than just your heroku app names, for example:
 
-> prod    => this-really-long-app-name
-> staging => this-really-long-app-name-that-is-used-as-a-demo
-> test    => this-really-long-app-name-draft
+```
+prod    => this-really-long-app-name
+staging => this-really-long-app-name-that-is-used-as-a-demo
+test    => this-really-long-app-name-draft
+```
 
 Which means that you could call the Hrk command instead of the heroku command
 using your remotes names like:
