@@ -1,9 +1,3 @@
 #!/usr/bin/env ruby
 
-app = ARGV.first
-apps = `git remote -v`.
-  scan(%r{^(\w+)\s+git@heroku\.com:(.+)\.git\b}).
-  inject({}) { |h, (k, v)| h.tap { |h| h[k] = v } }
-app = apps[app] if apps.has_key? app
-
-exit (if system("heroku #{ARGV.drop(1).join " "} -a #{app}") then 0 else 1 end)
+exit (if system("heroku #{ARGV.drop(1).join " "} -r #{ARGV.first}") then 0 else 1 end)
