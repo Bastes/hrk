@@ -1,3 +1,9 @@
 #!/usr/bin/env ruby
 
-exit (if system("heroku #{ARGV.drop(1).join " "} -r #{ARGV.first}") then 0 else 1 end)
+begin
+  $:.unshift(File.expand_path(File.dirname(__FILE__) + '/../lib'))
+  require 'hrk'
+rescue IOError
+end
+
+exit (if Hrk::Heroku.new(ARGV.first).exec(ARGV.drop(1).join(" ")) then 0 else 1 end)

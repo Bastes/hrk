@@ -7,7 +7,11 @@ Gem::Specification.new do |s|
   s.email         = 'michel.belleville@gmail.com'
   s.homepage      = 'http://github.com/Bastes/hrk'
   s.license       = 'GPL-3'
-  s.files         = Dir['README.md', 'bin/hrk']
+  s.files         = Dir['README.md', 'bin/hrk', '{lib,spec}/**/*.rb']
   s.bindir        = 'bin'
   s.executables   = ['hrk']
+
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'nyan-cat-formatter'
+  s.add_development_dependency 'guard-rspec'
 end
