@@ -15,11 +15,20 @@ RSpec.describe Hrk::Heroku do
 
       before { allow(heroku).to receive(:system) }
 
-      calling 'call rake db:rollback', on_remote: 'demo',    starts: 'heroku call rake db:rollback -r demo'
-      calling 'call rake db:migrate',  on_remote: 'prod',    starts: 'heroku call rake db:migrate -r prod'
-      calling 'call console',          on_remote: 'staging', starts: 'heroku call console -r staging'
-      calling 'logs -t',               on_remote: 'prod',    starts: 'heroku logs -t -r prod'
-      calling 'pgbackups:capture',     on_remote: 'demo',    starts: 'heroku pgbackups:capture -r demo'
+      describe '(standard case)' do
+        calling 'call rake db:rollback', on_remote: 'demo',    starts: 'heroku call rake db:rollback -r demo'
+        calling 'call rake db:migrate',  on_remote: 'prod',    starts: 'heroku call rake db:migrate -r prod'
+        calling 'call console',          on_remote: 'staging', starts: 'heroku call console -r staging'
+        calling 'logs -t',               on_remote: 'prod',    starts: 'heroku logs -t -r prod'
+        calling 'pgbackups:capture',     on_remote: 'demo',    starts: 'heroku pgbackups:capture -r demo'
+      end
+
+      describe '(edge case)' do
+        subject(:heroku) { Hrk::Heroku.new('some-remote') }
+
+        it { expect { heroku.call('run rake rake:db:migrate -r some-other-remote') }.to raise_exception(Hrk::Heroku::ExplicitApplicationError) }
+        it { expect { heroku.call('run rake rake:db:migrate -a different-app') }.to raise_exception(Hrk::Heroku::ExplicitApplicationError) }
+      end
     end
 
     describe 'the result of the command' do
