@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 RSpec.describe Hrk::Heroku do
-  describe '#exec' do
-    describe 'the system command executed' do
+  describe '#call' do
+    describe 'the system command ran' do
       def self.calling command, on_remote: 'whatever-app', starts: ''
         describe "calling '#{command}' on remote '#{on_remote}', system" do
           subject(:heroku) { Hrk::Heroku.new(on_remote) }
 
-          before { heroku.exec command }
+          before { heroku.call command }
 
           it { expect(heroku).to have_received(:system).with(starts) }
         end
@@ -15,11 +15,11 @@ RSpec.describe Hrk::Heroku do
 
       before { allow(heroku).to receive(:system) }
 
-      calling 'run rake db:rollback', on_remote: 'demo',    starts: 'heroku run rake db:rollback -r demo'
-      calling 'run rake db:migrate',  on_remote: 'prod',    starts: 'heroku run rake db:migrate -r prod'
-      calling 'run console',          on_remote: 'staging', starts: 'heroku run console -r staging'
-      calling 'logs -t',              on_remote: 'prod',    starts: 'heroku logs -t -r prod'
-      calling 'pgbackups:capture',    on_remote: 'demo',    starts: 'heroku pgbackups:capture -r demo'
+      calling 'call rake db:rollback', on_remote: 'demo',    starts: 'heroku call rake db:rollback -r demo'
+      calling 'call rake db:migrate',  on_remote: 'prod',    starts: 'heroku call rake db:migrate -r prod'
+      calling 'call console',          on_remote: 'staging', starts: 'heroku call console -r staging'
+      calling 'logs -t',               on_remote: 'prod',    starts: 'heroku logs -t -r prod'
+      calling 'pgbackups:capture',     on_remote: 'demo',    starts: 'heroku pgbackups:capture -r demo'
     end
 
     describe 'the result of the command' do
@@ -29,13 +29,13 @@ RSpec.describe Hrk::Heroku do
       context 'the command result is truthy' do
         let(:system_returns) { true }
 
-        it { expect(heroku.exec('some command')).to be_truthy }
+        it { expect(heroku.call('some command')).to be_truthy }
       end
 
       context 'the command result is falsy' do
         let(:system_returns) { false }
 
-        it { expect(heroku.exec('some command')).to be_falsy }
+        it { expect(heroku.call('some command')).to be_falsy }
       end
     end
   end

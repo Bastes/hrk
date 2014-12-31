@@ -4,7 +4,7 @@ module Hrk
       @remote_name = remote_name
     end
 
-    def exec command
+    def call command
       system %Q(heroku #{command} -r #{@remote_name})
     end
   end
