@@ -1,4 +1,4 @@
-require 'hrk/execute'
+require 'spec_helper'
 
 RSpec.describe Hrk::Execute do
   describe '.call' do
