@@ -16,8 +16,8 @@ module Hrk
       def display
         puts <<-eos
 Usage:
-  hrk remote: command..."
-  hrk [h | help | -h | --help]"
+  hrk remote: command...
+  hrk [h | help | -h | --help]
 
 Options:
   -h --help Display this screen.
