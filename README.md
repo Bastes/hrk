@@ -21,66 +21,100 @@ $ bundle install
 
 And enjoy the hrk command awesome power:
 ```
-$ hrk your-heroku-remote-name logs
+$ hrk your-heroku-remote-name: logs && hrk : run console
 ```
 
 
 ## What does it do?
 
-It's a command that calls the heroku toolbelt command for you, using your local
-heroku git remote name instead of that app's name.
+It's a command that calls the heroku toolbelt command for you, remembers the
+name of the previous remote so you don't have to re-type it again and again
+and again each time you want to chain heroku commands.
 
 For example, let's say I've got an heroku app that's called:
 
-> this-really-long-app-name
+> this-really-long-remote-name
 
 Well, I type my heroku commands like:
 
-```
-$ heroku run rake do:stuff
+```bash
+$ heroku run rake do:stuff -r this-really-long-remote-name
 ```
 
 And it's easy.
 
-Yep, but now I need a staging environment and a testing environment, so I add
-other heroku repositories that I aptly call:
+Yep, but now I want to chain my commands:
 
-```
-this-really-long-app-name-that-is-used-as-a-demo
-this-really-long-app-name-draft
-```
-
-Now all my heroku commands look like:
-
-```
-$ heroku run rake do:something:else -a this-really-long-app-name
-$ heroku run rake other:thing -a this-really-long-app-name-that-is-used-as-a-demo
-$ heroku run rake yet:another:task -a this-really-long-app-name-draft
+```bash
+$ heroku run rake do:something:else -r this-really-long-remote-name && \
+  heroku run rake other:thing       -r this-really-long-remote-name && \
+  heroku run rake yet:another:task  -r this-really-long-remote-name
 ```
 
-And, let's be frank, that sucks even when I don't have to chain these commands.
+And sometimes you mistype, and the chain breaks in the middle, and it sucks.
+
+**Wait, I can do something like that**
+
+```bash
+$ export REMOTE_NAME=this-really-long-remote-name && \
+  heroku run rake do:something:else -r $REMOTE_NAME && \
+  heroku run rake other:thing       -r $REMOTE_NAME && \
+  heroku run rake yet:another:task  -r $REMOTE_NAME
+```
+
+Yup. Now It doesn't look really that better now does it?
 
 **Hrk to the rescue!**
 
-Now, if you're like me, you've probably named your various heroku remotes in a
-more sensible way than just your heroku app names, for example:
+Hrk remembers the previous remote you've used. So you can do:
 
-```
-prod    => this-really-long-app-name
-staging => this-really-long-app-name-that-is-used-as-a-demo
-test    => this-really-long-app-name-draft
-```
-
-Which means that you could call the Hrk command instead of the heroku command
-using your remotes names like:
-
-```
-$ hrk prod    run rake do:some:work
-$ hrk staging run rake arrange:stuff
-$ hrk test    run rake test:some:thingy
+```bash
+$ hrk this-relly-long-remote-name: run rake do:some:work && \
+  hrk : run rake arrange:stuff && \
+  hrk : run rake test:some:thingy
 ```
 
-Easy!
+Isn't it more fun?
+
+## Wait, what happens when...
+
+**...I chain hrk commands with other bash commands?**
+
+No worry there, the previous remote will be remembered as long as you don't
+close your terminal.
+
+```bash
+$ git push demo && \
+  hrk demo: run rake set-this-once && \ # happens on demo
+  git push -f demo HEAD^ && \
+  hrk : restart                         # also on demo
+```
+
+**...I chain hrk commands on concurrent terminals for different remotes?**
+
+No worry either, both terminals have their own memory and shouldn't overlap.
+Then:
+
+```bash
+# on terminal 1
+$ hrk demo: run rake db:migrate && \ # happens on demo
+  hrk : restart                      # still on demo
+# on terminal 2
+$ hrk prod: run rake db:migrate && \ # happens on prod
+  hrk : restart                      # still on prod
+```
+
+**...I set another remote after completing a bunch of commands?**
+
+The last remote set is the one used by default for subsequent commands. So:
+
+```bash
+$ hrk demo: run rake db:migrate && \ # happens on demo
+  hrk : restart && \                 # also on demo
+  hrk prod: maintenance:on && \      # happens on prod
+  hrk : run rake db:migrate && \     # also on prod
+  hrk : maintenance:off              # still on prod
+```
 
 ## Do I still need the heroku toolbelt?
 
