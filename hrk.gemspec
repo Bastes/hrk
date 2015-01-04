@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'hrk'
-  s.version       = '0.0.2'
+  s.version       = '0.0.3'
   s.summary       = 'Hrk 2 swim like a dolphin in a sea of heroku commands'
   s.description   = 'Hrk 2 swim like a dolphin in a sea of heroku commands'
   s.authors       = ['Michel Belleville']

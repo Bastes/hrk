@@ -1,6 +1,4 @@
-require 'hrk/heroku'
-
 module Hrk
   autoload :Heroku,  'hrk/heroku'
-  autoload :Command, 'hrk/command'
+  autoload :Execute, 'hrk/execute'
 end

@@ -6,4 +6,4 @@ begin
 rescue IOError
 end
 
-exit (if Hrk::Command.new.call(*ARGV) then 0 else 1 end)
+exit (if Hrk::Execute.(*ARGV) then 0 else 1 end)
