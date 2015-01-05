@@ -2,6 +2,25 @@
 
 Hrk 2 swim like a dolphin in a sea of heroku commands
 
+```
+      ,|
+     / ;
+    /  \
+   : ,'(
+   |( `.\
+   : \  `\       \.
+    \ `.         | `.
+     \  `-._     ;   \
+      \     ``-.'.. _ `._
+       `. `-.            ```-...__
+        .'`.        --..          ``-..____
+      ,'.-'`,_-._            ((((   <o.   ,'
+           `' `-.)``-._-...__````  ____.-'
+               ,'    _,'.--,---------'
+           _.-' _..-'   ),'
+          ``--''        `
+```
+
 ## Getting started
 
 You can install the Hrk gem using the gem command:
