@@ -12,7 +12,7 @@ module Hrk
     private
 
     def validate! command
-      raise ExplicitApplicationError.new, "You're calling a command on remote #{@remote_name} yet the command explicitely references #{command[%r{-[ar]\s+\S+}]}" if command =~ %r{ -[ra]\b}
+      raise ExplicitApplicationError.new, "You're calling a command on remote #{@remote_name} yet the command explicitly references #{command[%r{-[ar]\s+\S+}]}" if command =~ %r{ -[ra]\b}
     end
 
     class ExplicitApplicationError < Exception
