@@ -5,16 +5,16 @@ require 'tmpdir'
 
 module Hrk
   class Env
-    def remote= remote_name
-      if remote_name
-        socket_path.write remote_name unless remote == remote_name
+    def remote= *args
+      if args
+        socket_path.write args.join(' ') unless remote == args
       else
         socket_path.delete if remote?
       end
     end
 
     def remote
-      socket_path.read if remote?
+      socket_path.read.split(' ', 2) if remote?
     end
 
     def remote?
