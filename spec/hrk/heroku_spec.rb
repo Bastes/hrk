@@ -16,11 +16,11 @@ RSpec.describe Hrk::Heroku do
       before { allow(heroku).to receive(:system) }
 
       describe '(standard case)' do
-        calling 'call rake db:rollback', on_remote: 'demo',    starts: 'heroku call rake db:rollback -r demo'
-        calling 'call rake db:migrate',  on_remote: 'prod',    starts: 'heroku call rake db:migrate -r prod'
-        calling 'call console',          on_remote: 'staging', starts: 'heroku call console -r staging'
-        calling 'logs -t',               on_remote: 'prod',    starts: 'heroku logs -t -r prod'
-        calling 'pgbackups:capture',     on_remote: 'demo',    starts: 'heroku pgbackups:capture -r demo'
+        calling 'call rake db:rollback', on_remote: '-r demo',    starts: 'heroku call rake db:rollback -r demo'
+        calling 'call rake db:migrate',  on_remote: '-r prod',    starts: 'heroku call rake db:migrate -r prod'
+        calling 'call console',          on_remote: '-r staging', starts: 'heroku call console -r staging'
+        calling 'logs -t',               on_remote: '-r prod',    starts: 'heroku logs -t -r prod'
+        calling 'pgbackups:capture',     on_remote: '-r demo',    starts: 'heroku pgbackups:capture -r demo'
       end
 
       describe '(edge case)' do
@@ -32,7 +32,7 @@ RSpec.describe Hrk::Heroku do
     end
 
     describe 'the result of the command' do
-      subject(:heroku) { Hrk::Heroku.new('some-remote') }
+      subject(:heroku) { Hrk::Heroku.new('-r some-remote') }
       before { allow(heroku).to receive(:system).with('heroku some command -r some-remote').and_return(system_returns) }
 
       context 'the command result is truthy' do

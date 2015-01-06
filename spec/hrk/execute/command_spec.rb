@@ -21,16 +21,16 @@ RSpec.describe Hrk::Execute::Command do
           describe "when the command returns #{result}" do
             before { allow(heroku).to receive(:call).and_return(result) }
 
-            it { expect(command.call("#{remote}:", *args)).to eq result }
+            it { expect(command.call('-r', remote, *args)).to eq result }
           end
         end
 
         describe 'interactions' do
-          before { command.call "#{remote}:", *args }
+          before { command.call '-r', remote, *args }
 
-          it { expect(Hrk::Heroku).to have_received(:new).with(remote) }
+          it { expect(Hrk::Heroku).to have_received(:new).with("-r #{remote}") }
           it { expect(heroku).to have_received(:call).with("whatever that:may -b") }
-          it { expect(command.env).to have_received(:remote=).with(remote) }
+          it { expect(command.env).to have_received(:remote=).with("-r #{remote}") }
         end
       end
 
@@ -41,14 +41,13 @@ RSpec.describe Hrk::Execute::Command do
         before { expect(command.env).not_to receive(:remote=) }
 
         it { expect { command.call }.to raise_error ArgumentError }
-        it { expect { command.call "bad-remote", *other_args }.to raise_error ArgumentError }
-        it { expect { command.call ":misplaced-marker", *other_args }.to raise_error ArgumentError }
-        it { expect { command.call ":", *other_args }.to raise_error ArgumentError }
+        it { expect { command.call "parameterless-remote", *other_args }.to raise_error ArgumentError }
+        it { expect { command.call *other_args, '-r' }.to raise_error ArgumentError }
       end
     end
 
     context 'a remote was previously memorized' do
-      let(:previous_remote) { "ye-olde-remote#{rand(1..9)}" }
+      let(:previous_remote) { "-r ye-olde-remote#{rand(1..9)}" }
       before { allow(command.env).to receive(:remote).and_return(previous_remote) }
       before { allow(command.env).to receive(:remote?).and_return(true) }
 
@@ -60,16 +59,16 @@ RSpec.describe Hrk::Execute::Command do
           describe "when the command returns #{result}" do
             before { allow(heroku).to receive(:call).and_return(result) }
 
-            it { expect(command.call("#{remote}:", *args)).to eq result }
+            it { expect(command.call('-r', remote, *args)).to eq result }
           end
         end
 
         describe 'interactions' do
-          before { command.call "#{remote}:", *args }
+          before { command.call '-r', remote, *args }
 
-          it { expect(Hrk::Heroku).to have_received(:new).with(remote) }
+          it { expect(Hrk::Heroku).to have_received(:new).with("-r #{remote}") }
           it { expect(heroku).to have_received(:call).with("whatever that:may -b") }
-          it { expect(command.env).to have_received(:remote=).with(remote) }
+          it { expect(command.env).to have_received(:remote=).with("-r #{remote}") }
         end
       end
 
@@ -80,27 +79,16 @@ RSpec.describe Hrk::Execute::Command do
           describe "when the command returns #{result}" do
             before { allow(heroku).to receive(:call).and_return(result) }
 
-            it { expect(command.call(":", *args)).to eq result }
+            it { expect(command.call(*args)).to eq result }
           end
         end
 
         describe 'interactions' do
-          before { command.call ":", *args }
+          before { command.call *args }
 
           it { expect(Hrk::Heroku).to have_received(:new).with(previous_remote) }
           it { expect(heroku).to have_received(:call).with("whatever that:may -b") }
         end
-      end
-
-      describe 'edge cases (no remote or improper remote)' do
-        let(:other_args) { %W(something-#{rand(1..9)} or-another) }
-
-        before { expect(heroku).not_to receive(:call) }
-        before { expect(command.env).not_to receive(:remote=) }
-
-        it { expect { command.call }.to raise_error ArgumentError }
-        it { expect { command.call "bad-remote", *other_args }.to raise_error ArgumentError }
-        it { expect { command.call ":misplaced-marker", *other_args }.to raise_error ArgumentError }
       end
     end
   end

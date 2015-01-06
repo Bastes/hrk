@@ -40,7 +40,7 @@ $ bundle install
 
 And enjoy the hrk command awesome power:
 ```
-$ hrk your-heroku-remote-name: logs && hrk : run console
+$ hrk logs -r your-heroku-remote-name && hrk run console
 ```
 
 
@@ -88,9 +88,9 @@ Yup. Now It doesn't look really that better now does it?
 Hrk remembers the previous remote you've used. So you can do:
 
 ```bash
-$ hrk this-relly-long-remote-name: run rake do:some:work && \
-  hrk : run rake arrange:stuff && \
-  hrk : run rake test:some:thingy
+$ hrk -r this-relly-long-remote-name run rake do:some:work && \
+  hrk run rake arrange:stuff && \
+  hrk run rake test:some:thingy
 ```
 
 Isn't it more fun?
@@ -104,9 +104,9 @@ close your terminal.
 
 ```bash
 $ git push demo && \
-  hrk demo: run rake set-this-once && \ # happens on demo
+  hrk -r demo run rake set-this-once && \ # happens on demo
   git push -f demo HEAD^ && \
-  hrk : restart                         # also on demo
+  hrk restart                             # also on demo
 ```
 
 **...I chain hrk commands on concurrent terminals for different remotes?**
@@ -116,11 +116,11 @@ Then:
 
 ```bash
 # on terminal 1
-$ hrk demo: run rake db:migrate && \ # happens on demo
-  hrk : restart                      # still on demo
+$ hrk -r demo run rake db:migrate && \ # happens on demo
+  hrk restart                          # still on demo
 # on terminal 2
-$ hrk prod: run rake db:migrate && \ # happens on prod
-  hrk : restart                      # still on prod
+$ hrk -r prod run rake db:migrate && \ # happens on prod
+  hrk restart                          # still on prod
 ```
 
 **...I set another remote after completing a bunch of commands?**
@@ -128,11 +128,21 @@ $ hrk prod: run rake db:migrate && \ # happens on prod
 The last remote set is the one used by default for subsequent commands. So:
 
 ```bash
-$ hrk demo: run rake db:migrate && \ # happens on demo
-  hrk : restart && \                 # also on demo
-  hrk prod: maintenance:on && \      # happens on prod
-  hrk : run rake db:migrate && \     # also on prod
-  hrk : maintenance:off              # still on prod
+$ hrk -r demo run rake db:migrate && \ # happens on demo
+  hrk  restart && \                    # also on demo
+  hrk -r prod maintenance:on && \      # happens on prod
+  hrk run rake db:migrate && \         # also on prod
+  hrk maintenance:off                  # still on prod
+```
+
+**...I place the "-r remote" argument at the end of the command, the heroku way**
+
+It just works.
+```bash
+# this command
+$ hrk run console -r demo
+# is the same as
+$ hrk -r demo run console
 ```
 
 ## Do I still need the heroku toolbelt?
