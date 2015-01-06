@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'hrk'
-  s.version       = '0.0.6'
+  s.version       = '0.0.7'
   s.summary       = 'Hrk remembers your heroku remotes'
   s.description   = <<-eos
 Hrk gives you the hrk command that proxies commands to heroku, keeping track of

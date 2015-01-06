@@ -16,17 +16,21 @@ module Hrk
       def display
         puts <<-eos
 Usage:
-  hrk [remote]: command...
+  hrk command [-r remote]...
   hrk [h | help | -h | --help]
 
 hrk remembers the last remote you've used to send a command on this terminal,
-and use it by default when you omit the optional [remote] argument.
+and use it by default when you omit the optional -r option.
 
 The command is whatever you would give heroku, except (obviously) for the
 -r or -a argument.
 
+Note that whatever argument or options the command is composed of should not
+be tampered with and passed as is to the heroku toolbelt command.
+
 Options:
-  -h --help Display this screen.
+  -h --help  Display this screen.
+  -r remote  Sets the remote for this command and the following
         eos
       end
 
