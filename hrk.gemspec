@@ -15,7 +15,7 @@ subsequent command.
   s.bindir        = 'bin'
   s.executables   = ['hrk']
 
-  s.add_development_dependency 'rspec',              '= 3.1.0', '< 4.0.0'
-  s.add_development_dependency 'nyan-cat-formatter', '= 0.11',  '< 1.0'
-  s.add_development_dependency 'guard-rspec',        '= 4.5.0', '< 5.0.0'
+  s.add_development_dependency 'rspec',              '~> 3.1',  '>= 3.1.0'
+  s.add_development_dependency 'nyan-cat-formatter', '~> 0.11', '>= 0.11'
+  s.add_development_dependency 'guard-rspec',        '~> 4.5',  '>= 4.5.0'
 end
