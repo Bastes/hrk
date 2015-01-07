@@ -138,6 +138,7 @@ $ hrk -r demo run rake db:migrate && \ # happens on demo
 **...I place the "-r remote" argument at the end of the command, the heroku way**
 
 It just works.
+
 ```bash
 # this command
 $ hrk run console -r demo
