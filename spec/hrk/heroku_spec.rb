@@ -7,7 +7,7 @@ RSpec.describe Hrk::Heroku do
         describe "calling '#{command.join ' '}' on remote '#{on_remote}', system" do
           subject(:heroku) { Hrk::Heroku.new(*on_remote) }
 
-          before { heroku.call *command }
+          before { heroku.call(*command) }
 
           it { expect(heroku).to have_received(:system).with(*starts) }
         end

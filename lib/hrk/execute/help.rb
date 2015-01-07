@@ -9,7 +9,7 @@ module Hrk
         if args.empty? || args.first =~ %r(\A(?:(?:(?:-)?h)|(?:(?:--)?help))\Z)
           display || true
         else
-          fallback *args
+          fallback(*args)
         end
       end
 
@@ -40,7 +40,7 @@ https://github.com/Bastes/hrk
 
       def fallback *args
         if @fallback
-          @fallback.call *args
+          @fallback.call(*args)
         else
           raise ArgumentError.new
         end

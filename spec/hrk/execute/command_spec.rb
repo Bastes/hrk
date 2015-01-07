@@ -28,7 +28,7 @@ RSpec.describe Hrk::Execute::Command do
             end
 
             describe 'interactions' do
-              before { command.call opt, remote, *args }
+              before { command.call(opt, remote, *args) }
 
               it { expect(Hrk::Heroku).to have_received(:new).with(opt, remote) }
               it { expect(heroku).to have_received(:call).with(*%w{whatever that:may -b}) }
@@ -46,9 +46,9 @@ RSpec.describe Hrk::Execute::Command do
 
         it { expect { command.call }.to raise_error ArgumentError }
         it { expect { command.call "parameterless-remote", *other_args }.to raise_error ArgumentError }
-        it { expect { command.call *other_args }.to raise_error ArgumentError }
-        it { expect { command.call *other_args, '-r' }.to raise_error ArgumentError }
-        it { expect { command.call *other_args, '-a' }.to raise_error ArgumentError }
+        it { expect { command.call(*other_args) }.to raise_error ArgumentError }
+        it { expect { command.call(*other_args, '-r') }.to raise_error ArgumentError }
+        it { expect { command.call(*other_args, '-a') }.to raise_error ArgumentError }
         it { expect { command.call '-r', 'remote', *other_args, '-r', 'other-remote' }.to raise_error ArgumentError }
         it { expect { command.call '-r', 'remote', *other_args, '-a', 'app' }.to raise_error ArgumentError }
         it { expect { command.call '-a', 'app', *other_args, '-a', 'other-app' }.to raise_error ArgumentError }
@@ -94,7 +94,7 @@ RSpec.describe Hrk::Execute::Command do
         end
 
         describe 'interactions' do
-          before { command.call *args }
+          before { command.call(*args) }
 
           it { expect(Hrk::Heroku).to have_received(:new).with('-r', previous_remote) }
           it { expect(heroku).to have_received(:call).with(*%w{whatever that:may -b}) }
@@ -107,12 +107,12 @@ RSpec.describe Hrk::Execute::Command do
         before { expect(heroku).not_to receive(:call) }
         before { expect(command.env).not_to receive(:remote=) }
 
-        it { expect { command.call *other_args, '-r' }.to raise_error ArgumentError }
-        it { expect { command.call *other_args, '-a' }.to raise_error ArgumentError }
-        it { expect { command.call '-r', 'remote', *other_args, '-r', 'other-remote' }.to raise_error ArgumentError }
-        it { expect { command.call '-r', 'remote', *other_args, '-a', 'app' }.to raise_error ArgumentError }
-        it { expect { command.call '-a', 'app', *other_args, '-a', 'other-app' }.to raise_error ArgumentError }
-        it { expect { command.call '-r', 'something', *other_args, '-a', 'something-else' }.to raise_error ArgumentError }
+        it { expect { command.call(*other_args, '-r') }.to raise_error ArgumentError }
+        it { expect { command.call(*other_args, '-a') }.to raise_error ArgumentError }
+        it { expect { command.call('-r', 'remote', *other_args, '-r', 'other-remote') }.to raise_error ArgumentError }
+        it { expect { command.call('-r', 'remote', *other_args, '-a', 'app') }.to raise_error ArgumentError }
+        it { expect { command.call('-a', 'app', *other_args, '-a', 'other-app') }.to raise_error ArgumentError }
+        it { expect { command.call('-r', 'something', *other_args, '-a', 'something-else') }.to raise_error ArgumentError }
       end
     end
   end

@@ -4,7 +4,7 @@ module Hrk
     autoload :Help,    'hrk/execute/help'
 
     def self.call *args
-      executer.call *args
+      executer.call(*args)
     end
 
     def self.executer
