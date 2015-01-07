@@ -3,12 +3,13 @@ module Hrk
     class Command
       attr_reader :env
 
+      ARG = /\A-[ar]\Z/
+
       def initialize
         @env = Hrk::Env.new
       end
 
       def call *args
-        raise ArgumentError.new("Too many remotes mentionned") if args.count('-r') > 1
         remote, command = remote_and_command args
         if remote
           @env.remote = remote
@@ -20,8 +21,10 @@ module Hrk
       end
 
       def remote_and_command args
-        args.slice_before('-r').inject([nil, []]) do |r, slice|
-          if r.first.nil? && slice.first == '-r' && slice.length > 1
+        args.slice_before { |arg| arg =~ ARG }.inject([nil, []]) do |r, slice|
+          if slice.first =~ ARG
+            raise ArgumentError.new('Remote option without value') if slice.length < 2
+            raise ArgumentError.new('Too many remotes mentionned') if r.first
             [slice.take(2), r.last + slice.drop(2)]
           else
             [r.first, r.last + slice]

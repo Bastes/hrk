@@ -15,12 +15,14 @@ RSpec.describe Hrk::Heroku do
 
       before { allow(heroku).to receive(:system) }
 
-      describe '(standard case)' do
-        calling %w(call rake db:rollback), on_remote: %w(-r demo),    starts: %W(heroku call rake db:rollback -r demo)
-        calling %w(call rake db:migrate),  on_remote: %w(-r prod),    starts: %W(heroku call rake db:migrate -r prod)
-        calling %w(call console),          on_remote: %w(-r staging), starts: %W(heroku call console -r staging)
-        calling %w(logs -t),               on_remote: %w(-r prod),    starts: %W(heroku logs -t -r prod)
-        calling %w(pgbackups:capture),     on_remote: %w(-r demo),    starts: %W(heroku pgbackups:capture -r demo)
+      %w(-a -r).each do |opt|
+        describe "(standard case, using #{opt})" do
+          calling %w(call rake db:rollback), on_remote: %W(#{opt} demo),    starts: %W(heroku call rake db:rollback #{opt} demo)
+          calling %w(call rake db:migrate),  on_remote: %W(#{opt} prod),    starts: %W(heroku call rake db:migrate #{opt} prod)
+          calling %w(call console),          on_remote: %W(#{opt} staging), starts: %W(heroku call console #{opt} staging)
+          calling %w(logs -t),               on_remote: %W(#{opt} prod),    starts: %W(heroku logs -t #{opt} prod)
+          calling %w(pgbackups:capture),     on_remote: %W(#{opt} demo),    starts: %W(heroku pgbackups:capture #{opt} demo)
+        end
       end
 
       describe '(edge case)' do

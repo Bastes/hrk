@@ -16,21 +16,22 @@ module Hrk
       def display
         puts <<-eos
 Usage:
-  hrk command [-r remote]...
+  hrk command [(-r remote | -a appname)]...
   hrk [h | help | -h | --help]
 
-hrk remembers the last remote you've used to send a command on this terminal,
-and use it by default when you omit the optional -r option.
+The hrk command remembers the last app you've send a command to on a terminal
+to use it when you omit the optional -r or -a option on subsequent calls.
 
 The command is whatever you would give heroku, except (obviously) for the
 -r or -a argument.
 
-Note that whatever argument or options the command is composed of should not
+Note that whatever argument and/or options the command is composed of should not
 be tampered with and passed as is to the heroku toolbelt command.
 
 Options:
-  -h --help  Display this screen.
-  -r remote  Sets the remote for this command and the following
+  -h --help   Display this screen.
+  -r remote   Sets the remote for this command and the following
+  -a appname  Sets the heroku app name for this command and the following
 
 More on the hrk command on the gem's website:
 https://github.com/Bastes/hrk

@@ -146,6 +146,17 @@ $ hrk run console -r demo
 $ hrk -r demo run console
 ```
 
+**...I prefer naming my app instead of the remote?**
+
+You can use either the -r or -a option, either will work as expected and the
+latest option will be memorized for subsequent uses.
+
+```bash
+$ hrk maintenance:on -a my-super-duper-app && \ # happens on my-super-duper-app
+  hrk run console && \                          # again on my-super-duper-app
+  hrk maintenance:off                           # aaand on my-super-duper-app
+```
+
 ## Do I still need the heroku toolbelt?
 
 Yes. The hrk command calls the heroku command for you, it does not replace it.
