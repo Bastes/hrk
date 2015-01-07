@@ -31,6 +31,9 @@ be tampered with and passed as is to the heroku toolbelt command.
 Options:
   -h --help  Display this screen.
   -r remote  Sets the remote for this command and the following
+
+More on the hrk command on the gem's website:
+https://github.com/Bastes/hrk
         eos
       end
 
