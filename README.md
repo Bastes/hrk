@@ -27,13 +27,13 @@ Hrk 2 swim like a dolphin in a sea of heroku commands
 
 You can install the Hrk gem using the gem command:
 
-```
+```bash
 $ gem install hrk
 ```
 
 Or through bundler:
 
-```
+```ruby
 # in your Gemfile
 gem 'hrk', group: :development
 
@@ -41,7 +41,7 @@ $ bundle install
 ```
 
 And enjoy the hrk command awesome power:
-```
+```bash
 $ hrk logs -r your-heroku-remote-name && hrk run console
 ```
 
