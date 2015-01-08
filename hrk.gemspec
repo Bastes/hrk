@@ -2,7 +2,7 @@ require './lib/hrk'
 Gem::Specification.new do |s|
   s.name          = 'hrk'
   s.version       = Hrk::VERSION
-  s.summary       = 'Hrk remembers your heroku remotes'
+  s.summary       = 'Hrk remembers your heroku remotes for you.'
   s.description   = <<-eos
 Hrk gives you the hrk command that proxies commands to heroku, keeping track of
 the latest remote you used so you don't have to keep on typing it on every

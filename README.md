@@ -1,6 +1,6 @@
 # Hrk
 
-Hrk 2 swim like a dolphin in a sea of heroku commands
+Hrk remembers your heroku remotes for you.
 
 ```
       ,|
@@ -20,6 +20,8 @@ Hrk 2 swim like a dolphin in a sea of heroku commands
            _.-' _..-'   ),'
           ``--''        `
 ```
+
+Hrk 2 swim like a dolphin in a sea of heroku commands
 
 ## Getting started
 
