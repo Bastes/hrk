@@ -52,7 +52,7 @@ It's a command that calls the heroku toolbelt command for you, remembers the
 name of the previous remote so you don't have to re-type it again and again
 and again each time you want to chain heroku commands.
 
-For example, let's say I've got an heroku app that's called:
+For example, let's say I've got an heroku app which remote is called:
 
 > this-really-long-remote-name
 
@@ -77,13 +77,18 @@ And sometimes you mistype, and the chain breaks in the middle, and it sucks.
 **Wait, I can do something like that**
 
 ```bash
-$ export REMOTE_NAME=this-really-long-remote-name && \
-  heroku run rake do:something:else -r $REMOTE_NAME && \
-  heroku run rake other:thing       -r $REMOTE_NAME && \
-  heroku run rake yet:another:task  -r $REMOTE_NAME
+$ export HEROKU_APP=this-app-name-that-is-usually-even-longer-than-the-remote-name && \
+  heroku run rake do:something:else && \
+  heroku run rake other:thing       && \
+  heroku run rake yet:another:task
 ```
 
-Yup. Now It doesn't look really that better now does it?
+Yup, it works.
+Still feels like one command too many.
+Still have to remember the names of my apps for each project instead of using my
+aptly, conventionnaly named remotes ('test', 'staging', 'prod'...).
+
+Isn't there a better way?
 
 **Hrk to the rescue!**
 
