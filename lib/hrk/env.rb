@@ -5,12 +5,8 @@ require 'tmpdir'
 
 module Hrk
   class Env
-    def remote= *args
-      if args
-        socket_path.write args.join(' ') unless remote == args
-      else
-        socket_path.delete if remote?
-      end
+    def remote= args
+      socket_path.write args.join(' ') unless remote == args
     end
 
     def remote
@@ -22,9 +18,12 @@ module Hrk
     end
 
     def tmp_path
-      Pathname.
-        new(File.join(ENV['XDG_RUNTIME_DIR'] || Dir.tmpdir, 'hrk')).
+      tmp_dir.join('hrk').
         tap { |path| FileUtils.mkdir_p(path) unless path.exist? }
+    end
+
+    def tmp_dir
+      Pathname.new(ENV['XDG_RUNTIME_DIR'] || Dir.tmpdir)
     end
 
     def socket_path
