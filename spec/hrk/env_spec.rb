@@ -3,14 +3,20 @@ require 'spec_helper'
 RSpec.describe Hrk::Env do
   subject(:env) { Hrk::Env.new }
 
+  shared_context 'fake socket_path' do
+    let(:socket_path) { double(Pathname) }
+
+    before { allow(socket_path).to receive(:delete) }
+    before { allow(socket_path).to receive(:write) }
+    before { allow(env).to receive(:socket_path).and_return socket_path }
+  end
+
   describe '#remote=' do
-    let(:some_path) { double(Pathname) }
+    include_context 'fake socket_path'
 
     let(:remote_arg)   { "-#{%w(a r).sample}" }
     let(:remote_name)  { "remote##{rand(1..9)}" }
 
-    before { allow(some_path).to receive(:write) }
-    before { allow(env).to receive(:socket_path).and_return some_path }
     before { allow(env).to receive(:remote).and_return(previous_remote) }
 
     before { env.remote = [remote_arg, remote_name] }
@@ -18,28 +24,27 @@ RSpec.describe Hrk::Env do
     context 'no previous remote' do
       let(:previous_remote) { nil }
 
-      it { expect(some_path).to have_received(:write).with("#{remote_arg} #{remote_name}") }
+      it { expect(socket_path).to have_received(:write).with("#{remote_arg} #{remote_name}") }
     end
 
     context 'the previous remote is different' do
       let(:previous_remote) { ['-r', 'previous'] }
 
-      it { expect(some_path).to have_received(:write).with("#{remote_arg} #{remote_name}") }
+      it { expect(socket_path).to have_received(:write).with("#{remote_arg} #{remote_name}") }
     end
 
     context 'the previous remote is identical' do
       let(:previous_remote) { [remote_arg, remote_name] }
 
-      it { expect(some_path).not_to have_received(:write) }
+      it { expect(socket_path).not_to have_received(:write) }
     end
   end
 
   describe '#remote' do
-    let(:some_path) { double(Pathname) }
+    include_context 'fake socket_path'
 
-    before { allow(some_path).to receive(:exist?).and_return it_pre_exist }
-    before { allow(some_path).to receive(:read).and_return remote }
-    before { allow(env).to receive(:socket_path).and_return some_path }
+    before { allow(socket_path).to receive(:exist?).and_return it_pre_exist }
+    before { allow(socket_path).to receive(:read).and_return remote }
 
     context 'no remote file exists' do
       let(:it_pre_exist) { false }
@@ -59,10 +64,9 @@ RSpec.describe Hrk::Env do
   end
 
   describe '#remote?' do
-    let(:some_path) { double(Pathname) }
+    include_context 'fake socket_path'
 
-    before { allow(some_path).to receive(:exist?).and_return it_pre_exist }
-    before { allow(env).to receive(:socket_path).and_return some_path }
+    before { allow(socket_path).to receive(:exist?).and_return it_pre_exist }
 
     context 'the remote file exists' do
       let(:it_pre_exist) { true }
