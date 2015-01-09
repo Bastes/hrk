@@ -11,6 +11,10 @@ module Hrk
       @tty_digest = Digest::MD5.hexdigest(`tty`)
     end
 
+    def cleanup!
+      remote_path.delete
+    end
+
     def remote= args
       remote_path.write args.join(' ') unless remote == args
     end

@@ -25,6 +25,26 @@ RSpec.describe Hrk::Env do
     it { expect(env.tty_digest).to eq Digest::MD5.hexdigest(tty) }
   end
 
+  describe '#cleanup!' do
+    include_context 'fake remote_path'
+
+    before { allow(remote_path).to receive(:exist?).and_return it_pre_exist }
+
+    before { env.cleanup! }
+
+    context 'the file pre-exists' do
+      let(:it_pre_exist) { true }
+
+      it { expect(remote_path).to have_received(:delete) }
+    end
+
+    context 'the file does not pre-exists' do
+      let(:it_pre_exist) { false }
+
+      it { expect(remote_path).not_to have_received(:delete) }
+    end
+  end
+
   describe '#remote=' do
     include_context 'fake remote_path'
 
