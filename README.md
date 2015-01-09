@@ -1,4 +1,5 @@
 # Hrk
+[![Build Status](https://travis-ci.org/Bastes/hrk.svg?branch=master)](https://travis-ci.org/Bastes/hrk)
 
 Hrk remembers your heroku remotes for you.
 
