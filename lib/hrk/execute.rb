@@ -8,8 +8,7 @@ module Hrk
     end
 
     def self.executer
-      Hrk::Execute::Help.new \
-        Hrk::Execute::Command.new
+      Help.new Command.new
     end
   end
 end

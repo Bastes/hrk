@@ -16,4 +16,13 @@ RSpec.describe Hrk::Execute do
       end
     end
   end
+
+  describe '.executer' do
+    let(:help)    { double(Hrk::Execute::Help) }
+    let(:command) { double(Hrk::Execute::Command) }
+    before { allow(Hrk::Execute::Help).to receive(:new).with(command).and_return(help) }
+    before { allow(Hrk::Execute::Command).to receive(:new).and_return(command) }
+
+    it { expect(Hrk::Execute.executer).to eq help }
+  end
 end
