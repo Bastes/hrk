@@ -1,4 +1,5 @@
 # Hrk
+[![Gem Version](https://badge.fury.io/rb/hrk.svg)](http://badge.fury.io/rb/hrk)
 [![Build Status](https://travis-ci.org/Bastes/hrk.svg?branch=master)](https://travis-ci.org/Bastes/hrk)
 [![Dependency Status](https://gemnasium.com/Bastes/hrk.svg)](https://gemnasium.com/Bastes/hrk)
 
