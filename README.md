@@ -167,6 +167,30 @@ $ hrk maintenance:on -a my-super-duper-app && \ # happens on my-super-duper-app
   hrk maintenance:off                           # aaand on my-super-duper-app
 ```
 
+**...if I don't chain commands?**
+
+Hrk has been designed to help when chaining commands, but it will remember your
+last remote until you close your terminal. So this will work:
+
+```bash
+$ hrk logs -r demo
+...
+$ hrk console # happens on demo
+```
+
+This also means you have to be a little careful not to forget on which remote
+you are. We are currently planning on adding a little more security there, so
+stay tuned.
+
+## Where will it run?
+
+It should run on Linux and MacOSX, provided you've installed ruby.
+
+It might run on Windows, although it hasn't been tested and relies on system
+commands that might be different. If you're a windows user and would like to
+give it a try, please do send us your issues and / or pull requests to make hrk
+run there.
+
 ## Do I still need the heroku toolbelt?
 
 Yes. The hrk command calls the heroku command for you, it does not replace it.
