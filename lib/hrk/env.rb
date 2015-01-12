@@ -11,8 +11,19 @@ module Hrk
       @tty_digest = Digest::MD5.hexdigest(`tty`)
     end
 
+    def schedule_cleanup!
+      fork do
+        at_exit { cleanup! }
+        while(true) do
+          `tty`
+          exit if $? != 0
+          sleep 1
+        end
+      end
+    end
+
     def cleanup!
-      remote_path.delete
+      remote_path.delete if remote_path.exist?
     end
 
     def remote= args

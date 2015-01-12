@@ -12,6 +12,20 @@ RSpec.describe Hrk::Env do
   end
 
   shared_context 'fake tty' do
+    let(:tty) { "/dev/pts/#{rand(1..9)}" }
+
+    before { allow_any_instance_of(Hrk::Env).to receive(:`).and_return(tty) }
+  end
+
+  describe '#initialize' do
+    include_context 'fake tty'
+
+    subject!(:env) { Hrk::Env.new }
+
+    it { expect(env.tty_digest).to eq Digest::MD5.hexdigest(tty) }
+  end
+
+  shared_context 'fake tty' do
     let(:tty)      { "/dev/pts/#{rand(1..9)}" }
 
     before { allow_any_instance_of(Hrk::Env).to receive(:`).and_return(tty) }
@@ -159,10 +173,8 @@ RSpec.describe Hrk::Env do
     include_context 'fake tty'
 
     let(:some_dir) { Pathname.new "/and#{rand(1..9)}/another_/dir" }
-    let(:tty)      { "/dev/pts/#{rand(1..9)}" }
 
     before { allow(env).to receive(:tmp_path).and_return(Pathname.new(some_dir)) }
-    before { allow(env).to receive(:`).and_return(tty) }
 
     it { expect(env.remote_path).to eq Pathname.new("#{some_dir}/#{Digest::MD5.hexdigest(tty)}") }
   end
