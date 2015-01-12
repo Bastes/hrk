@@ -25,20 +25,6 @@ RSpec.describe Hrk::Env do
     it { expect(env.tty_digest).to eq Digest::MD5.hexdigest(tty) }
   end
 
-  shared_context 'fake tty' do
-    let(:tty)      { "/dev/pts/#{rand(1..9)}" }
-
-    before { allow_any_instance_of(Hrk::Env).to receive(:`).and_return(tty) }
-  end
-
-  describe '#initialize' do
-    include_context 'fake tty'
-
-    subject!(:env) { Hrk::Env.new }
-
-    it { expect(env.tty_digest).to eq Digest::MD5.hexdigest(tty) }
-  end
-
   describe '#cleanup!' do
     include_context 'fake remote_path'
 
