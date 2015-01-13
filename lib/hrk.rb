@@ -1,6 +1,6 @@
-module Hrk
-  VERSION = '0.0.8'
+require 'hrk/version'
 
+module Hrk
   autoload :Env,     'hrk/env'
   autoload :Heroku,  'hrk/heroku'
   autoload :Execute, 'hrk/execute'

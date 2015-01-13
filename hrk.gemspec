@@ -1,4 +1,5 @@
-require './lib/hrk'
+require './lib/hrk/version'
+
 Gem::Specification.new do |s|
   s.name          = 'hrk'
   s.version       = Hrk::VERSION
