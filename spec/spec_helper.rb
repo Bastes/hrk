@@ -1,3 +1,8 @@
+require 'simplecov'
+SimpleCov.start do
+  add_filter '/vendor/bundle/'
+end
+
 require 'hrk'
 
 RSpec.configure do |config|
