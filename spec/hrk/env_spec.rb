@@ -11,6 +11,14 @@ RSpec.describe Hrk::Env do
     before { allow(env).to receive(:remote_path).and_return remote_path }
   end
 
+  shared_context 'fake pid_path' do
+    let(:pid_path) { double(Pathname) }
+
+    before { allow(pid_path).to receive(:write) }
+    before { allow(pid_path).to receive(:delete) }
+    before { allow(env).to receive(:pid_path).and_return pid_path }
+  end
+
   shared_context 'fake tty' do
     let(:tty) { "/dev/pts/#{rand(1..9)}" }
 
@@ -27,21 +35,37 @@ RSpec.describe Hrk::Env do
 
   describe '#cleanup!' do
     include_context 'fake remote_path'
+    include_context 'fake pid_path'
 
-    before { allow(remote_path).to receive(:exist?).and_return it_pre_exist }
+    let(:the_remote_pre_exist) { [true, false].sample }
+    let(:the_pid_pre_exist)    { [true, false].sample }
+    before { allow(remote_path).to receive(:exist?).and_return the_remote_pre_exist }
+    before { allow(pid_path).to receive(:exist?).and_return the_pid_pre_exist }
 
     before { env.cleanup! }
 
-    context 'the file pre-exists' do
-      let(:it_pre_exist) { true }
+    context 'the remote file pre-exists' do
+      let(:the_remote_pre_exist) { true }
 
       it { expect(remote_path).to have_received(:delete) }
     end
 
-    context 'the file does not pre-exists' do
-      let(:it_pre_exist) { false }
+    context 'the remote file does not pre-exists' do
+      let(:the_remote_pre_exist) { false }
 
       it { expect(remote_path).not_to have_received(:delete) }
+    end
+
+    context 'the pid file pre-exists' do
+      let(:the_pid_pre_exist) { true }
+
+      it { expect(pid_path).to have_received(:delete) }
+    end
+
+    context 'the pid file does not pre-exists' do
+      let(:the_pid_pre_exist) { false }
+
+      it { expect(pid_path).not_to have_received(:delete) }
     end
   end
 
@@ -52,6 +76,7 @@ RSpec.describe Hrk::Env do
     let(:remote_name)  { "remote##{rand(1..9)}" }
 
     before { allow(env).to receive(:remote).and_return(previous_remote) }
+    before { allow(env).to receive(:schedule_cleanup!) }
 
     before { env.remote = [remote_arg, remote_name] }
 
@@ -65,12 +90,14 @@ RSpec.describe Hrk::Env do
       let(:previous_remote) { ['-r', 'previous'] }
 
       it { expect(remote_path).to have_received(:write).with("#{remote_arg} #{remote_name}") }
+      it { expect(env).to have_received(:schedule_cleanup!) }
     end
 
     context 'the previous remote is identical' do
       let(:previous_remote) { [remote_arg, remote_name] }
 
       it { expect(remote_path).not_to have_received(:write) }
+      it { expect(env).to have_received(:schedule_cleanup!) }
     end
   end
 
@@ -163,5 +190,94 @@ RSpec.describe Hrk::Env do
     before { allow(env).to receive(:tmp_path).and_return(Pathname.new(some_dir)) }
 
     it { expect(env.remote_path).to eq Pathname.new("#{some_dir}/#{Digest::MD5.hexdigest(tty)}") }
+  end
+
+  describe '#cleanup_scheduled?' do
+    let(:pid) { rand(1000..99999) }
+    before { allow(env).to receive(:pid).and_return(pid) }
+    before { allow(env).to receive(:pid?).and_return(the_pid_exist) }
+
+    context 'there is no pid file' do
+      let(:the_pid_exist)        { false }
+      let(:the_process_be_alive) { [false, true].sample }
+
+      it { expect(env.cleanup_scheduled?).to be_falsy }
+    end
+
+    context 'there is a pid file' do
+      let(:the_pid_exist) { true }
+
+      context 'the process is alived' do
+        let(:the_process_be_alive) { true }
+        before { allow(Process).to receive(:kill).with(0, pid).and_return(the_process_be_alive) }
+
+        it { expect(env.cleanup_scheduled?).to be_truthy }
+      end
+
+      context 'the process is dead' do
+        let(:the_process_be_alive) { false }
+        before { allow(Process).to receive(:kill).with(0, pid).and_raise(Errno::ESRCH) }
+
+        it { expect(env.cleanup_scheduled?).to be_falsy }
+      end
+    end
+  end
+
+  describe '#pid' do
+    include_context 'fake pid_path'
+
+    before { allow(pid_path).to receive(:exist?).and_return it_pre_exist }
+    before { allow(pid_path).to receive(:read).and_return pid }
+
+    context 'no pid file exists' do
+      let(:it_pre_exist) { false }
+      let(:pid)          { nil }
+
+      it { expect(env.pid).to eq nil }
+    end
+
+    context 'the pid file exists' do
+      let(:it_pre_exist) { true }
+      let(:pid)          { "#{rand(1000..99999)}" }
+
+      it { expect(env.pid).to eq pid.to_i }
+    end
+  end
+
+  describe '#pid?' do
+    include_context 'fake pid_path'
+
+    before { allow(pid_path).to receive(:exist?).and_return it_pre_exist }
+
+    context 'the pid file exists' do
+      let(:it_pre_exist) { true }
+
+      it { expect(env.pid?).to eq true }
+    end
+
+    context 'the pid file does not exist' do
+      let(:it_pre_exist) { false }
+
+      it { expect(env.pid?).to eq false }
+    end
+  end
+
+  describe '#pid=' do
+    let(:pid)      { rand(1000..99999) }
+    include_context 'fake pid_path'
+
+    before { env.pid = pid }
+
+    it { expect(pid_path).to have_received(:write).with(pid) }
+  end
+
+  describe '#pid_path' do
+    include_context 'fake tty'
+
+    let(:some_dir) { Pathname.new "/and#{rand(1..9)}/another_/dir" }
+
+    before { allow(env).to receive(:tmp_path).and_return(Pathname.new(some_dir)) }
+
+    it { expect(env.pid_path).to eq Pathname.new("#{some_dir}/#{Digest::MD5.hexdigest(tty)}.pid") }
   end
 end
