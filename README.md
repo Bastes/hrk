@@ -195,6 +195,35 @@ run there.
 
 Yes. The hrk command calls the heroku command for you, it does not replace it.
 
+## How do I contribute?
+
+In many ways:
+
+**If you're having fun using hrk...**
+
+...you can of course give your feedback and ideas for improvements through
+[github issues](https://github.com/Bastes/hrk/issues).
+
+**If you'd like to tweak something...**
+
+Fork the project on the [github page](https://github.com/Bastes/hrk/issues)
+and do what you want with it, that's what free software (and github) is for.
+
+If you added something awesome or killed a nasty bug and want everybody to
+rejoice, you can send a pull request and it'll be merged (or you'll receive an
+explaination why it won't as is).
+
+Pull requests with specs improve their chances to be accepted, so don't shy away
+from adding / changing / fixing the specs.
+
+If you'd like to to help on current issues, feel also free to browse them and
+attack the ones you'd like to get your hands on. Pull requests that fix issues
+are always welcome.
+
+And if you read the code and feel your eyes start to bleed, maybe you can
+notify me (preferably after consulting a good eye doctor). Code reviews lead to
+better code, and better code makes hrk happy.
+
 ## Very important warning!
 
 Hrk is pronounced like "a shark" because it's funny.
