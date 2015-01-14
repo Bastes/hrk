@@ -6,6 +6,7 @@ module Hrk
 
     def call *command
       validate! command
+      puts "Executing `#{(['heroku'] + command + @remote).join ' '}`..."
       system 'heroku', *(command + @remote)
     end
 
