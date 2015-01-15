@@ -6,11 +6,15 @@ module Hrk
       end
 
       def call *args
-        begin
-          @callee.call *args
-        rescue
-          puts "Error: #{$!.message}"
-          false
+        if args.include? '--hrk-testing'
+          @callee.call *(args - ['--hrk-testing'])
+        else
+          begin
+            @callee.call *args
+          rescue
+            puts "Error: #{$!.message}"
+            false
+          end
         end
       end
     end
