@@ -7,10 +7,10 @@ module Hrk
 
       def call *args
         if args.include? '--hrk-testing'
-          @callee.call *(args - ['--hrk-testing'])
+          @callee.call(*(args - ['--hrk-testing']))
         else
           begin
-            @callee.call *args
+            @callee.call(*args)
           rescue
             puts "Error: #{$!.message}"
             false
