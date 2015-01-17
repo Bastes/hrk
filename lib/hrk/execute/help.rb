@@ -16,6 +16,7 @@ module Hrk
       def display
         puts <<-eos
 Usage:
+  hrk
   hrk command [(-r remote | -a appname)] [options]...
   hrk [h | help | -h | --help]
 
@@ -27,6 +28,9 @@ The command is whatever you would give heroku, except (obviously) for the
 
 Note that whatever argument and/or options the command is composed of should not
 be tampered with and passed as is to the heroku toolbelt command.
+
+You can pass no option to hrk to have it return current memorized remote (the
+command will fail when no remote have been defined).
 
 Options:
   -h --help     Display this screen.
