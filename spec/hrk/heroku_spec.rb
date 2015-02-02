@@ -2,22 +2,22 @@ require 'spec_helper'
 
 RSpec.describe Hrk::Heroku do
   describe '#call' do
-    describe 'the system command ran' do
+    describe 'the exec command ran' do
       def self.calling command, on_remote: %W(-r whatever-app), starts: [], and_outputs: ''
-        describe "calling '#{command.join ' '}' on remote '#{on_remote}', system" do
+        describe "calling '#{command.join ' '}' on remote '#{on_remote}', exec" do
           subject(:heroku) { Hrk::Heroku.new(*on_remote) }
 
           before { allow(heroku).to receive(:puts) }
 
           specify do
             heroku.call(*command)
-            expect(heroku).to have_received(:system).with(*starts)
+            expect(heroku).to have_received(:exec).with(*starts)
             expect(heroku).to have_received(:puts).with(and_outputs)
           end
         end
       end
 
-      before { allow(heroku).to receive(:system) }
+      before { allow(heroku).to receive(:exec) }
 
       %w(-a -r).each do |opt|
         describe "(standard case, using #{opt})" do
@@ -62,17 +62,17 @@ RSpec.describe Hrk::Heroku do
 
     describe 'the result of the command' do
       subject(:heroku) { Hrk::Heroku.new(*%w(-r some-remote)) }
-      before { allow(heroku).to receive(:system).with(*%W(heroku some command -r some-remote)).and_return(system_returns) }
+      before { allow(heroku).to receive(:exec).with(*%W(heroku some command -r some-remote)).and_return(exec_returns) }
       before { allow(heroku).to receive(:puts) }
 
       context 'the command result is truthy' do
-        let(:system_returns) { true }
+        let(:exec_returns) { true }
 
         it { expect(heroku.call(*%w(some command))).to be_truthy }
       end
 
       context 'the command result is falsy' do
-        let(:system_returns) { false }
+        let(:exec_returns) { false }
 
         it { expect(heroku.call(*%w(some command))).to be_falsy }
       end
