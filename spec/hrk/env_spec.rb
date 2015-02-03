@@ -19,6 +19,14 @@ RSpec.describe Hrk::Env do
     before { allow(env).to receive(:pid_path).and_return pid_path }
   end
 
+  shared_context 'fake last_time_path' do
+    let(:last_time_path) { double(Pathname) }
+
+    before { allow(last_time_path).to receive(:write) }
+    before { allow(last_time_path).to receive(:delete) }
+    before { allow(env).to receive(:last_time_path).and_return last_time_path }
+  end
+
   shared_context 'fake tty' do
     let(:tty) { "/dev/pts/#{rand(1..9)}" }
 
@@ -276,8 +284,66 @@ RSpec.describe Hrk::Env do
 
     let(:some_dir) { Pathname.new "/and#{rand(1..9)}/another_/dir" }
 
-    before { allow(env).to receive(:tmp_path).and_return(Pathname.new(some_dir)) }
+    before { allow(env).to receive(:tmp_path).and_return(some_dir) }
 
     it { expect(env.pid_path).to eq Pathname.new("#{some_dir}/#{Digest::MD5.hexdigest(tty)}.pid") }
+  end
+
+  describe '#last_time' do
+    include_context 'fake last_time_path'
+
+    before { allow(last_time_path).to receive(:exist?).and_return it_pre_exist }
+    before { allow(last_time_path).to receive(:read).and_return last_time.to_i.to_s }
+
+    context 'no last_time file exists' do
+      let(:it_pre_exist) { false }
+      let(:last_time)    { nil }
+
+      it { expect(env.last_time).to eq nil }
+    end
+
+    context 'the last_time file exists' do
+      let(:it_pre_exist) { true }
+      let(:last_time) { Time.at(rand(Time.new(2015, 1, 1, 0, 0, 0).to_i..Time.new(2020, 1, 1, 0, 0, 0).to_i)) }
+
+      it { expect(env.last_time).to eq last_time }
+    end
+  end
+
+  describe '#last_time?' do
+    include_context 'fake last_time_path'
+
+    before { allow(last_time_path).to receive(:exist?).and_return it_pre_exist }
+
+    context 'the last_time file exists' do
+      let(:it_pre_exist) { true }
+
+      it { expect(env.last_time?).to eq true }
+    end
+
+    context 'the last_time file does not exist' do
+      let(:it_pre_exist) { false }
+
+      it { expect(env.last_time?).to eq false }
+    end
+  end
+
+  describe '#last_time=' do
+    let(:last_time) { Time.at(rand(Time.new(2015, 1, 1, 0, 0, 0).to_i..Time.new(2020, 1, 1, 0, 0, 0).to_i)) }
+    include_context 'fake last_time_path'
+
+    before { env.last_time = last_time }
+
+    it { expect(last_time_path).to have_received(:write).with(last_time.to_i) }
+  end
+
+  describe '#last_time_path' do
+    include_context "fake tty"
+
+    let(:some_dir) { Pathname.new "/stairway/#{rand(1..9)}/heavens" }
+
+    before { allow(env).to receive(:tmp_path).and_return(some_dir) }
+
+    it { expect(env.last_time_path).to eq Pathname.new("#{some_dir}/#{Digest::MD5.hexdigest(tty)}.time") }
   end
 end

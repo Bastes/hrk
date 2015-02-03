@@ -73,11 +73,27 @@ module Hrk
     end
 
     def pid= value
-      pid_path.write(value)
+      pid_path.write value
     end
 
     def pid_path
       tmp_path.join "#{tty_digest}.pid"
+    end
+
+    def last_time
+      Time.at(last_time_path.read.to_i) if last_time?
+    end
+
+    def last_time?
+      last_time_path.exist?
+    end
+
+    def last_time= value
+      last_time_path.write value.to_i
+    end
+
+    def last_time_path
+      tmp_path.join "#{tty_digest}.time"
     end
   end
 end
