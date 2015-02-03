@@ -14,6 +14,7 @@ module Hrk
     def schedule_cleanup!
       unless cleanup_scheduled?
         self.pid = fork do
+          Signal.trap('INT') {}
           at_exit { cleanup! }
           while(true) do
             `tty`
