@@ -1,6 +1,7 @@
 module Hrk
   module Execute
     autoload :Command,        'hrk/execute/command'
+    autoload :RemoteLast,     'hrk/execute/remote_last'
     autoload :Help,           'hrk/execute/help'
     autoload :ErrorTrap,      'hrk/execute/error_trap'
     autoload :HerokuDetector, 'hrk/execute/heroku_detector'
@@ -11,7 +12,7 @@ module Hrk
     end
 
     def self.executer
-      ErrorTrap.new HerokuDetector.new RemoteDisplay.new Help.new Command.new
+      ErrorTrap.new HerokuDetector.new RemoteDisplay.new Help.new RemoteLast.new Command.new
     end
   end
 end
