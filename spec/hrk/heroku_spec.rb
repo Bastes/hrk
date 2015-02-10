@@ -1,19 +1,18 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe Hrk::Heroku do
-  describe '#call' do
-    describe 'the exec command ran' do
-      def self.calling command, on_remote: %W(-r whatever-app), starts: [], and_outputs: ''
-        describe "calling '#{command.join ' '}' on remote '#{on_remote}', exec" do
+  describe "#call" do
+    describe "the exec command ran" do
+      def self.calling command, on_remote: %W(-r whatever-app), starts: [], and_outputs: ""
+        describe "calling `#{command.join " "}` on remote #{on_remote}" do
           subject(:heroku) { Hrk::Heroku.new(*on_remote) }
 
           before { allow(heroku).to receive(:puts) }
 
-          specify do
-            heroku.call(*command)
-            expect(heroku).to have_received(:exec).with(*starts)
-            expect(heroku).to have_received(:puts).with(and_outputs)
-          end
+          subject!(:result) { heroku.call(*command) }
+
+          it { expect(heroku).to have_received(:exec).with(*starts) }
+          it { expect(heroku).to have_received(:puts).with(and_outputs) }
         end
       end
 
@@ -44,35 +43,38 @@ RSpec.describe Hrk::Heroku do
         end
       end
 
-      describe '(edge case)' do
+      describe "(edge case)" do
         subject(:heroku) { Hrk::Heroku.new(*%w(-r some-remote)) }
 
         before { allow(heroku).to receive(:puts) }
+        before { allow(heroku).to receive(:exec) }
 
-        specify 'another remote is mentionned' do
+        specify "another remote is mentionned" do
           expect { heroku.call(*%w(run rake rake:db:migrate -r some-other-remote)) }.to raise_exception(Hrk::Heroku::ExplicitApplicationError)
           expect(heroku).not_to have_received(:puts)
+          expect(heroku).not_to have_received(:exec)
         end
-        specify 'another app is mentionned' do
+        specify "another app is mentionned" do
           expect { heroku.call(*%w(run rake rake:db:migrate -a different-app)) }.to raise_exception(Hrk::Heroku::ExplicitApplicationError)
           expect(heroku).not_to have_received(:puts)
+          expect(heroku).not_to have_received(:exec)
         end
       end
     end
 
-    describe 'the result of the command' do
+    describe "the result of the command" do
       subject(:heroku) { Hrk::Heroku.new(*%w(-r some-remote)) }
-      before { allow(heroku).to receive(:exec).with(*%W(heroku some command -r some-remote)).and_return(exec_returns) }
-      before { allow(heroku).to receive(:puts) }
+      before { expect(heroku).to receive(:exec).with(*%W(heroku some command -r some-remote)).and_return(exec_return) }
+      before { expect(heroku).to receive(:puts) }
 
-      context 'the command result is truthy' do
-        let(:exec_returns) { true }
+      context "the command result is truthy" do
+        let(:exec_return) { true }
 
         it { expect(heroku.call(*%w(some command))).to be_truthy }
       end
 
-      context 'the command result is falsy' do
-        let(:exec_returns) { false }
+      context "the command result is falsy" do
+        let(:exec_return) { false }
 
         it { expect(heroku.call(*%w(some command))).to be_falsy }
       end
