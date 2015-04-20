@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Hrk::Execute::Remember do
   describe '#call' do
-    let(:next_callee) { double }
+    let(:next_callee) { double(Hrk::Execute::Command) }
 
     subject(:remember) { Hrk::Execute::Remember.new next_callee }
     subject(:env) { double(Hrk::Env) }

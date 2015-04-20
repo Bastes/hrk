@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe Hrk::Execute::HerokuDetector do
   describe '#call' do
-    let(:next_callee) { double }
+    let(:next_callee) { double(Hrk::Execute::Command) }
 
     subject(:heroku_detector) { Hrk::Execute::HerokuDetector.new(next_callee) }
 

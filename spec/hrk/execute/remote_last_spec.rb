@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Hrk::Execute::RemoteLast do
   describe "#call" do
-    let(:next_callee) { double }
+    let(:next_callee) { double(Hrk::Execute::Command) }
 
     subject(:remote_last) { Hrk::Execute::RemoteLast.new next_callee }
 

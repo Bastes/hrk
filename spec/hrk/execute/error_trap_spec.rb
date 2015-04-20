@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe Hrk::Execute::ErrorTrap do
   describe '#call' do
-    let(:next_callee) { double }
+    let(:next_callee) { double(Hrk::Execute::Command) }
 
     subject(:error_trap) { Hrk::Execute::ErrorTrap.new(next_callee) }
 
