@@ -23,10 +23,12 @@ RSpec.describe Hrk::Execute do
     let(:remote_display)  { double(Hrk::Execute::RemoteDisplay) }
     let(:help)            { double(Hrk::Execute::Help) }
     let(:remote_last)     { double(Hrk::Execute::RemoteLast) }
+    let(:remember)        { double(Hrk::Execute::Remember) }
     let(:command)         { double(Hrk::Execute::Command) }
 
     before { allow(Hrk::Execute::Command).       to receive(:new).and_return(command) }
-    before { allow(Hrk::Execute::RemoteLast).    to receive(:new).with(command).and_return(remote_last) }
+    before { allow(Hrk::Execute::Remember).      to receive(:new).with(command).and_return(remember) }
+    before { allow(Hrk::Execute::RemoteLast).    to receive(:new).with(remember).and_return(remote_last) }
     before { allow(Hrk::Execute::Help).          to receive(:new).with(remote_last).and_return(help) }
     before { allow(Hrk::Execute::RemoteDisplay). to receive(:new).with(help).and_return(remote_display) }
     before { allow(Hrk::Execute::HerokuDetector).to receive(:new).with(remote_display).and_return(heroku_detector) }
