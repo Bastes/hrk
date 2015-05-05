@@ -24,10 +24,12 @@ RSpec.describe Hrk::Execute do
     let(:help)            { double(Hrk::Execute::Help) }
     let(:remote_last)     { double(Hrk::Execute::RemoteLast) }
     let(:remember)        { double(Hrk::Execute::Remember) }
+    let(:ask_for_remote)  { double(Hrk::Execute::AskForRemote) }
     let(:command)         { double(Hrk::Execute::Command) }
 
     before { allow(Hrk::Execute::Command).       to receive(:new).and_return(command) }
-    before { allow(Hrk::Execute::Remember).      to receive(:new).with(command).and_return(remember) }
+    before { allow(Hrk::Execute::AskForRemote).  to receive(:new).with(command).and_return(ask_for_remote) }
+    before { allow(Hrk::Execute::Remember).      to receive(:new).with(ask_for_remote).and_return(remember) }
     before { allow(Hrk::Execute::RemoteLast).    to receive(:new).with(remember).and_return(remote_last) }
     before { allow(Hrk::Execute::Help).          to receive(:new).with(remote_last).and_return(help) }
     before { allow(Hrk::Execute::RemoteDisplay). to receive(:new).with(help).and_return(remote_display) }
