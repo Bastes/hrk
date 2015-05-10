@@ -9,6 +9,7 @@ RSpec.describe Hrk::Execute::Command do
     before { allow(Hrk::Heroku).to receive(:new).and_return(heroku) }
 
     before { allow(command.env).to receive(:remote=) }
+    before { allow(command.env).to receive(:last_time=) }
 
     context "no remote was previously memorized" do
       before { allow(command.env).to receive(:remote?).and_return(nil) }
@@ -28,11 +29,13 @@ RSpec.describe Hrk::Execute::Command do
             end
 
             describe "interactions" do
+              around { |b| Timecop.freeze Time.now, &b }
               before { command.call(*args, opt, remote) }
 
               it { expect(Hrk::Heroku).to have_received(:new).with(opt, remote) }
               it { expect(heroku).to have_received(:call).with(*%w{whatever that:may -b}) }
               it { expect(command.env).to have_received(:remote=).with([opt, remote]) }
+              it { expect(command.env).to have_received(:last_time=).with(Time.now) }
             end
           end
         end
@@ -53,11 +56,13 @@ RSpec.describe Hrk::Execute::Command do
               end
 
               describe "interactions" do
+                around { |b| Timecop.freeze Time.now, &b }
                 before { command.call(opt, remote) }
 
                 it { expect(Hrk::Heroku).to have_received(:new).with(opt, remote) }
                 it { expect(heroku).to have_received(:call).with no_args }
                 it { expect(command.env).to have_received(:remote=).with([opt, remote]) }
+                it { expect(command.env).to have_received(:last_time=).with(Time.now) }
               end
             end
           end
@@ -68,6 +73,7 @@ RSpec.describe Hrk::Execute::Command do
 
           before { expect(heroku).not_to receive(:call) }
           before { expect(command.env).not_to receive(:remote=) }
+          before { expect(command.env).not_to receive(:last_time=) }
 
           it { expect { command.call }.to raise_error ArgumentError }
           it { expect { command.call(*other_args) }.to raise_error ArgumentError }

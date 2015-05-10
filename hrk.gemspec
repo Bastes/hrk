@@ -24,4 +24,5 @@ subsequent command.
   s.add_development_dependency 'rubygems-tasks',     '~> 0.2',  '>= 0.2.4'
   s.add_development_dependency 'simplecov',          '~> 0.9',  '>= 0.9.1'
   s.add_development_dependency 'coveralls',          '~> 0.7',  '>= 0.7.1'
+  s.add_development_dependency "timecop",            "~> 0.7",  ">= 0.7.3"
 end

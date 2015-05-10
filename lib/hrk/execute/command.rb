@@ -11,8 +11,10 @@ module Hrk
 
       def call *args
         command, remote = command_and_remote args
-        @env.remote = remote
-        Hrk::Heroku.new(*remote).call(*command)
+        Hrk::Heroku.new(*remote).call(*command).tap do
+          @env.remote = remote
+          @env.last_time = Time.now
+        end
       end
 
       private

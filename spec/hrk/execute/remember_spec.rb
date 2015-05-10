@@ -50,13 +50,50 @@ RSpec.describe Hrk::Execute::Remember do
       before { allow(env).to receive(:remote?).and_return(true) }
       before { allow(env).to receive(:remote).and_return(remote) }
 
+      context "no remote in the args" do
+        before { allow(env).to receive(:last_time?).and_return true }
+        before { allow(env).to receive(:last_time).and_return(the_last_time) }
+
+        context "last command ended less than 5 seconds ago" do
+          let(:the_last_time) { Time.now - 4 }
+
+          receiving %w(restart), it_should_pass_on: -> { %w(restart) + remote }
+        end
+
+        context "last command ended more than 5 seconds ago" do
+          let(:the_last_time) { Time.now - 6 }
+          before { allow(remember).to receive(:puts) }
+          before { allow(STDIN).to receive(:gets).and_return(the_users_input) }
+
+          ["y", "Y", "yes", "YES", "Yes"].each do |confirmation|
+            context "and the user confirms with #{confirmation}" do
+              let(:the_users_input) { "#{confirmation}\n" }
+
+              receiving %w(restart), it_should_pass_on: -> { %w(restart) + remote }
+            end
+          end
+
+          ["n", "N", "no", "NO", "No"].each do |abortion|
+            context "and the user aborts with #{abortion}" do
+              let(:the_users_input) { abortion }
+
+              receiving %w(run rake db:migrate), it_should_pass_on: -> { %w(run rake db:migrate) }
+            end
+          end
+
+          ["o", "whatever", "dude", "-r demo"].each do |gibbrish|
+            context "and the user answers with #{gibbrish}" do
+              let(:the_users_input) { gibbrish }
+
+              it { expect { remember.call %w(run rails console) }.to raise_error Hrk::Execute::Remember::InvalidInputError }
+            end
+          end
+        end
+      end
+
       context "a remote in the args" do
         receiving %w(run rake some:task -r a-remote), it_should_pass_on: %w(run rake some:task -r a-remote)
         receiving %w(maintenance:on -a another-app), it_should_pass_on: %w(maintenance:on -a another-app)
-      end
-
-      context "no remote in the args" do
-        receiving %w(restart), it_should_pass_on: -> { %w(restart) + remote }
       end
 
       context "part of a remote in the args" do
