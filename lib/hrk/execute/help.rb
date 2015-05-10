@@ -1,15 +1,15 @@
 module Hrk
   module Execute
     class Help
-      def initialize fallback = nil
-        @fallback = fallback
+      def initialize next_callee = nil
+        @next_callee = next_callee
       end
 
       def call *args
         if args.empty? || args.first =~ %r(\A(?:(?:(?:-)?h)|(?:(?:--)?help))\Z)
           display || true
         else
-          fallback(*args)
+          next_callee(*args)
         end
       end
 
@@ -44,9 +44,9 @@ https://github.com/Bastes/hrk
         eos
       end
 
-      def fallback *args
-        if @fallback
-          @fallback.call(*args)
+      def next_callee *args
+        if @next_callee
+          @next_callee.call(*args)
         else
           raise ArgumentError.new
         end

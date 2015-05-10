@@ -1,9 +1,9 @@
 module Hrk
   module Execute
     class RemoteDisplay
-      def initialize fallback
+      def initialize next_callee
         @env = Hrk::Env.new
-        @fallback = fallback
+        @next_callee = next_callee
       end
 
       def call *args
@@ -15,7 +15,7 @@ module Hrk
             false
           end
         else
-          @fallback.call(*args)
+          @next_callee.call(*args)
         end
       end
     end

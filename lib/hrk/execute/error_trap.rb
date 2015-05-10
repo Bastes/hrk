@@ -1,16 +1,16 @@
 module Hrk
   module Execute
     class ErrorTrap
-      def initialize callee
-        @callee = callee
+      def initialize next_callee
+        @next_callee = next_callee
       end
 
       def call *args
         if args.include? '--hrk-testing'
-          @callee.call(*(args - ['--hrk-testing']))
+          @next_callee.call(*(args - ['--hrk-testing']))
         else
           begin
-            @callee.call(*args)
+            @next_callee.call(*args)
           rescue
             puts "Error: #{$!.message}"
             false

@@ -1,13 +1,13 @@
 module Hrk
   module Execute
     class HerokuDetector
-      def initialize callee
-        @callee = callee
+      def initialize next_callee
+        @next_callee = next_callee
       end
 
       def call *args
         if heroku_present?
-          @callee.call(*args)
+          @next_callee.call(*args)
         else
           puts <<-eos
 Error: The heroku command is missing!
