@@ -13,7 +13,13 @@ module Hrk
     end
 
     def self.executer
-      ErrorTrap.new HerokuDetector.new RemoteDisplay.new Help.new RemoteLast.new Remember.new Command.new
+      ErrorTrap.new \
+        HerokuDetector.new \
+        RemoteDisplay.new \
+        Help.new \
+        RemoteLast.new \
+        Remember.new \
+        Command.new
     end
   end
 end
