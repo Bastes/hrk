@@ -6,7 +6,7 @@ module Hrk
       end
 
       def call *args
-        @next_callee.call *insure_remote(args)
+        @next_callee.call(*insure_remote(args))
       end
 
       private
