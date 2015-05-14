@@ -1,5 +1,57 @@
 module Hrk
   class Heroku
+    class Arguments
+      class Part
+        def initialize arguments
+          @arguments = arguments
+        end
+
+        def == other
+          other == @arguments
+        end
+
+        def to_a
+          to_ary
+        end
+
+        def to_ary
+          @arguments
+        end
+      end
+
+      class Remote < Part
+      end
+
+      class Command < Part
+      end
+
+      def initialize arguments
+        index = arguments.each_cons(2).to_a.index { |(arg, _)| arg =~ /\A-[ar]\Z/ }
+        @remote  = index && Remote.new(arguments[index, 2])
+        @command = Command.new((index && arguments[0, index] + arguments[index + 2, arguments.size]) || arguments)
+      end
+
+      def remote
+        @remote
+      end
+
+      def command
+        @command
+      end
+
+      def to_a
+        to_ary
+      end
+
+      def to_ary
+        @command.to_a + (@remote.to_a || [])
+      end
+
+      def == other
+        other == to_ary
+      end
+    end
+
     def initialize *remote
       @remote = remote
     end

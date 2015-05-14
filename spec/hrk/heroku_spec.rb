@@ -1,6 +1,55 @@
 require "spec_helper"
 
 RSpec.describe Hrk::Heroku do
+  describe Hrk::Heroku::Arguments do
+    describe "#remote, #command" do
+      def self.given arguments_given, the_remote_is: nil, the_command_is: nil
+        context "given #{arguments_given}" do
+          subject(:arguments) { Hrk::Heroku::Arguments.new(arguments_given) }
+
+          it { expect(arguments.remote).to  eq the_remote_is }
+          it { expect(arguments.command).to eq the_command_is }
+        end
+      end
+
+      given %w(-r demo),
+        the_remote_is:  %w(-r demo),
+        the_command_is: []
+      given %w(-a app2),
+        the_remote_is:  %w(-a app2),
+        the_command_is: []
+      given %w(),
+        the_remote_is:  nil,
+        the_command_is: []
+      given %w(-r test run rake db:migrate),
+        the_remote_is:  %w(-r test),
+        the_command_is: %w(run rake db:migrate)
+      given %w(logs --tail -a my-awesome-app),
+        the_remote_is:  %w(-a my-awesome-app),
+        the_command_is: %w(logs --tail)
+      given %w(pg:copy DATABASE_URL HEROKU_POSTGRESQL_PINK -a sushi --confirm sushi),
+        the_remote_is:  %w(-a sushi),
+        the_command_is: %w(pg:copy DATABASE_URL HEROKU_POSTGRESQL_PINK --confirm sushi)
+    end
+
+    describe "#to_a, #to_ary" do
+      def self.given arguments_given, the_array_is: nil
+        context "given #{arguments_given}" do
+          subject(:arguments) { Hrk::Heroku::Arguments.new(arguments_given) }
+
+          it { expect(arguments.to_a).to eq the_array_is }
+          it { expect(arguments).to      eq the_array_is }
+        end
+      end
+
+      given [],                         the_array_is: []
+      given %w(-r demo),                the_array_is: %w(-r demo)
+      given %w(run rake db:migrate),    the_array_is: %w(run rake db:migrate)
+      given %w(restart -a prod),        the_array_is: %w(restart -a prod)
+      given %w(-r staging logs --tail), the_array_is: %w(logs --tail -r staging)
+    end
+  end
+
   describe "#call" do
     describe "the exec command ran" do
       def self.calling command, on_remote: %W(-r whatever-app), starts: [], and_outputs: ""
