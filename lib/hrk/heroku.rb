@@ -10,13 +10,10 @@ module Hrk
           other == @arguments
         end
 
-        def to_a
-          to_ary
-        end
-
         def to_ary
           @arguments
         end
+        alias :to_a :to_ary
       end
 
       class Remote < Part
@@ -25,27 +22,18 @@ module Hrk
       class Command < Part
       end
 
+      attr_reader :remote, :command
+
       def initialize arguments
         index = arguments.each_cons(2).to_a.index { |(arg, _)| arg =~ /\A-[ar]\Z/ }
         @remote  = index && Remote.new(arguments[index, 2])
         @command = Command.new((index && arguments[0, index] + arguments[index + 2, arguments.size]) || arguments)
       end
 
-      def remote
-        @remote
-      end
-
-      def command
-        @command
-      end
-
-      def to_a
-        to_ary
-      end
-
       def to_ary
         @command.to_a + (@remote.to_a || [])
       end
+      alias :to_a :to_ary
 
       def == other
         other == to_ary
