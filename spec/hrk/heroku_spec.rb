@@ -20,18 +20,18 @@ RSpec.describe Hrk::Heroku do
 
       %w(-a -r).each do |opt|
         describe "(standard case, using #{opt})" do
-          calling        %w(call rake db:rollback),
+          calling        %w(run rake db:rollback),
             on_remote:   %W(#{opt} demo),
-            starts:      %W(heroku call rake db:rollback #{opt} demo),
-            and_outputs: %Q(Executing `heroku call rake db:rollback #{opt} demo`...)
-          calling        %w(call rake db:migrate),
+            starts:      %W(heroku run rake db:rollback #{opt} demo),
+            and_outputs: %Q(Executing `heroku run rake db:rollback #{opt} demo`...)
+          calling        %w(run rake db:migrate),
             on_remote:   %W(#{opt} prod),
-            starts:      %W(heroku call rake db:migrate #{opt} prod),
-            and_outputs: %Q(Executing `heroku call rake db:migrate #{opt} prod`...)
-          calling        %w(call console),
+            starts:      %W(heroku run rake db:migrate #{opt} prod),
+            and_outputs: %Q(Executing `heroku run rake db:migrate #{opt} prod`...)
+          calling        %w(run console),
             on_remote:   %W(#{opt} staging),
-            starts:      %W(heroku call console #{opt} staging),
-            and_outputs: %Q(Executing `heroku call console #{opt} staging`...)
+            starts:      %W(heroku run console #{opt} staging),
+            and_outputs: %Q(Executing `heroku run console #{opt} staging`...)
           calling        %w(logs -t),
             on_remote:   %W(#{opt} prod),
             starts:      %W(heroku logs -t #{opt} prod),
