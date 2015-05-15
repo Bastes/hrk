@@ -1,5 +1,8 @@
 module Hrk
   class Heroku
+    class ExplicitApplicationError < StandardError
+    end
+
     class Arguments
       class Part
         def initialize arguments
@@ -61,9 +64,6 @@ module Hrk
       Signal.trap("INT") {}
       Process.wait fork { Kernel.exec(*command) }
       $?.success?.tap { Signal.trap("INT", "DEFAULT") }
-    end
-
-    class ExplicitApplicationError < Exception
     end
   end
 end
