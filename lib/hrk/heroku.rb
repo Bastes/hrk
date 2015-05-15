@@ -41,6 +41,29 @@ module Hrk
       def == other
         other == to_ary
       end
+
+      def call
+        validate! command
+        puts "Executing `#{to_execute.join " "}`..."
+        exec to_execute
+      end
+
+      private
+
+      def validate! command
+        other_remote = (command.to_a.each_cons(2).detect { |(parameter, _)| parameter =~ %r{\A-[ar]\Z} } rescue nil)
+        raise ExplicitApplicationError.new, "You're calling a command on remote #{remote.to_a.join " "} yet the command explicitly references #{other_remote.join " "}" if other_remote
+      end
+
+      def to_execute
+        ["heroku"] + to_a
+      end
+
+      def exec *command
+        Signal.trap("INT") {}
+        Process.wait fork { Kernel.exec(*command) }
+        $?.success?.tap { Signal.trap("INT", "DEFAULT") }
+      end
     end
 
     def initialize *remote
