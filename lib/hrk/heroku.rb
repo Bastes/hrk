@@ -1,6 +1,9 @@
 module Hrk
   class Heroku
-    class ExplicitApplicationError < StandardError
+    class TooManyRemotesError < StandardError
+    end
+
+    class NoRemoteError < StandardError
     end
 
     class Arguments
@@ -51,8 +54,9 @@ module Hrk
       private
 
       def validate! command
+        raise NoRemoteError.new "No remote or app mentionned in the arguments: `#{command.to_a.join " "}`" unless remote
         other_remote = (command.to_a.each_cons(2).detect { |(parameter, _)| parameter =~ %r{\A-[ar]\Z} } rescue nil)
-        raise ExplicitApplicationError.new, "You're calling a command on remote #{remote.to_a.join " "} yet the command explicitly references #{other_remote.join " "}" if other_remote
+        raise TooManyRemotesError.new, "You're calling a command on remote #{remote.to_a.join " "} yet the command explicitly references #{other_remote.join " "}" if other_remote
       end
 
       def to_execute
@@ -80,7 +84,7 @@ module Hrk
 
     def validate! command
       remote = (command.each_cons(2).detect { |(parameter, _)| parameter =~ %r{\A-[ar]\Z} }.join " " rescue nil)
-      raise ExplicitApplicationError.new, "You're calling a command on remote #{@remote.join " "} yet the command explicitly references #{remote}" if remote
+      raise TooManyRemotesError.new, "You're calling a command on remote #{@remote.join " "} yet the command explicitly references #{remote}" if remote
     end
 
     def exec *command

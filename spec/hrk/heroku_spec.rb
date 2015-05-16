@@ -84,7 +84,7 @@ RSpec.describe Hrk::Heroku do
         end
       end
 
-      describe "(edge case)" do
+      describe "edge cases" do
         subject(:arguments) { Hrk::Heroku::Arguments.new(the_arguments) }
 
         before { allow(arguments).to receive(:puts) }
@@ -94,7 +94,7 @@ RSpec.describe Hrk::Heroku do
           let(:the_arguments) { %w(-r some-remote run rake rake:db:migrate -r some-other-remote) }
 
           specify do
-            expect { arguments.call }.to raise_exception(Hrk::Heroku::ExplicitApplicationError)
+            expect { arguments.call }.to raise_exception(Hrk::Heroku::TooManyRemotesError)
             expect(arguments).not_to have_received(:puts)
             expect(arguments).not_to have_received(:exec)
           end
@@ -104,7 +104,17 @@ RSpec.describe Hrk::Heroku do
           let(:the_arguments) { %w(-r some-remote run rake rake:db:migrate -a different-app) }
 
           specify do
-            expect { arguments.call }.to raise_exception(Hrk::Heroku::ExplicitApplicationError)
+            expect { arguments.call }.to raise_exception(Hrk::Heroku::TooManyRemotesError)
+            expect(arguments).not_to have_received(:puts)
+            expect(arguments).not_to have_received(:exec)
+          end
+        end
+
+        describe "no remote nor app is mentionned" do
+          let(:the_arguments) { %w(run rake some:important --task) }
+
+          specify do
+            expect { arguments.call }.to raise_exception(Hrk::Heroku::NoRemoteError)
             expect(arguments).not_to have_received(:puts)
             expect(arguments).not_to have_received(:exec)
           end
@@ -181,12 +191,13 @@ RSpec.describe Hrk::Heroku do
         before { allow(heroku).to receive(:exec) }
 
         specify "another remote is mentionned" do
-          expect { heroku.call(*%w(run rake rake:db:migrate -r some-other-remote)) }.to raise_exception(Hrk::Heroku::ExplicitApplicationError)
+          expect { heroku.call(*%w(run rake rake:db:migrate -r some-other-remote)) }.to raise_exception(Hrk::Heroku::TooManyRemotesError)
           expect(heroku).not_to have_received(:puts)
           expect(heroku).not_to have_received(:exec)
         end
+
         specify "another app is mentionned" do
-          expect { heroku.call(*%w(run rake rake:db:migrate -a different-app)) }.to raise_exception(Hrk::Heroku::ExplicitApplicationError)
+          expect { heroku.call(*%w(run rake rake:db:migrate -a different-app)) }.to raise_exception(Hrk::Heroku::TooManyRemotesError)
           expect(heroku).not_to have_received(:puts)
           expect(heroku).not_to have_received(:exec)
         end
