@@ -3,11 +3,7 @@ module Hrk
     class Remember
       include IO
 
-      class InvalidInputError < StandardError
-        def initialize input
-          super "Can't understand `#{input}` ; aborting"
-        end
-      end
+      autoload :InvalidInputError, "hrk/execute/remember/invalid_input_error"
 
       def initialize next_callee
         @next_callee = next_callee
