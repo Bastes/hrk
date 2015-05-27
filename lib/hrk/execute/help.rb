@@ -5,11 +5,11 @@ module Hrk
         @next_callee = next_callee
       end
 
-      def call *args
-        if args.empty? || args.first =~ %r(\A(?:(?:(?:-)?h)|(?:(?:--)?help))\Z)
+      def call arguments
+        if arguments.command.to_a.empty? || arguments.command.to_a.first =~ %r(\A(?:(?:(?:-)?h)|(?:(?:--)?help))\Z)
           display || true
         else
-          next_callee(*args)
+          next_callee(arguments)
         end
       end
 
@@ -44,9 +44,9 @@ https://github.com/Bastes/hrk
         eos
       end
 
-      def next_callee *args
+      def next_callee arguments
         if @next_callee
-          @next_callee.call(*args)
+          @next_callee.call(arguments)
         else
           raise ArgumentError.new
         end

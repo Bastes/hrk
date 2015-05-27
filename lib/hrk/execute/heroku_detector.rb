@@ -5,9 +5,9 @@ module Hrk
         @next_callee = next_callee
       end
 
-      def call *args
+      def call arguments
         if heroku_present?
-          @next_callee.call(*args)
+          @next_callee.call(arguments)
         else
           puts <<-eos
 Error: The heroku command is missing!

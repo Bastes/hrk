@@ -32,7 +32,8 @@ module Hrk
 
     def remote= args
       schedule_cleanup!
-      remote_path.write args.join(' ') unless remote == args
+      arguments = args.to_a
+      remote_path.write arguments.join(' ') unless remote == arguments
     end
 
     def remote

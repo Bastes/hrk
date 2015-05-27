@@ -6,7 +6,7 @@ module Hrk
         @next_callee = next_callee
       end
 
-      def call *args
+      def call args
         if args.empty?
           if @env.remote?
             puts @env.remote.join ' '
@@ -15,7 +15,7 @@ module Hrk
             false
           end
         else
-          @next_callee.call(*args)
+          @next_callee.call(args)
         end
       end
     end

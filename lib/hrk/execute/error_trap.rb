@@ -5,12 +5,12 @@ module Hrk
         @next_callee = next_callee
       end
 
-      def call *args
-        if args.include? '--hrk-testing'
-          @next_callee.call(*(args - ['--hrk-testing']))
+      def call args
+        if args.include? "--hrk-testing"
+          @next_callee.call(args - ["--hrk-testing"])
         else
           begin
-            @next_callee.call(*args)
+            @next_callee.call(args)
           rescue
             puts "Error: #{$!.message}"
             false

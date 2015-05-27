@@ -82,30 +82,39 @@ RSpec.describe Hrk::Env do
 
     let(:remote_arg)   { "-#{%w(a r).sample}" }
     let(:remote_name)  { "remote##{rand(1..9)}" }
+    let(:previous_remote) { nil }
 
     before { allow(env).to receive(:remote).and_return(previous_remote) }
     before { allow(env).to receive(:schedule_cleanup!) }
 
-    before { env.remote = [remote_arg, remote_name] }
+    context "standard case" do
+      subject!(:the_assertion) { env.remote = [remote_arg, remote_name] }
 
-    context 'no previous remote' do
-      let(:previous_remote) { nil }
+      context 'no previous remote' do
+        it { expect(remote_path).to have_received(:write).with("#{remote_arg} #{remote_name}") }
+      end
 
-      it { expect(remote_path).to have_received(:write).with("#{remote_arg} #{remote_name}") }
+      context 'the previous remote is different' do
+        let(:previous_remote) { ['-r', 'previous'] }
+
+        it { expect(remote_path).to have_received(:write).with("#{remote_arg} #{remote_name}") }
+        it { expect(env).to have_received(:schedule_cleanup!) }
+      end
+
+      context 'the previous remote is identical' do
+        let(:previous_remote) { [remote_arg, remote_name] }
+
+        it { expect(remote_path).not_to have_received(:write) }
+        it { expect(env).to have_received(:schedule_cleanup!) }
+      end
     end
 
-    context 'the previous remote is different' do
-      let(:previous_remote) { ['-r', 'previous'] }
+    context "edge case: an object that needs to be cast to an array" do
+      subject(:not_an_array) { double }
+      before { allow(not_an_array).to receive(:to_a).and_return [remote_arg, remote_name] }
+      subject!(:the_assertion) { env.remote = not_an_array }
 
       it { expect(remote_path).to have_received(:write).with("#{remote_arg} #{remote_name}") }
-      it { expect(env).to have_received(:schedule_cleanup!) }
-    end
-
-    context 'the previous remote is identical' do
-      let(:previous_remote) { [remote_arg, remote_name] }
-
-      it { expect(remote_path).not_to have_received(:write) }
-      it { expect(env).to have_received(:schedule_cleanup!) }
     end
   end
 

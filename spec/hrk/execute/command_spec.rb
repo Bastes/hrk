@@ -4,87 +4,36 @@ RSpec.describe Hrk::Execute::Command do
   describe "#call" do
     subject(:command) { Hrk::Execute::Command.new }
 
-    let(:heroku) { double("Hrk::Heroku") }
-    before { allow(heroku).to receive(:call) }
-    before { allow(Hrk::Heroku).to receive(:new).and_return(heroku) }
+    let(:arguments) { double(Hrk::Heroku) }
 
     before { allow(command.env).to receive(:remote=) }
     before { allow(command.env).to receive(:last_time=) }
 
-    context "no remote was previously memorized" do
-      before { allow(command.env).to receive(:remote?).and_return(nil) }
+    context "the arguments are alright" do
+      [true, false].each do |the_result|
+        context "and the command returns #{the_result}" do
+          around { |b| Timecop.freeze Time.now, &b }
 
-      describe "standard case (a remote, a command)" do
-        let(:remote) { "remote-#{rand(1..9)}" }
-        let(:args)   { %w(whatever that:may -b) }
+          let(:the_remote)  { %W(-#{%w(a r).sample} remote-#{rand(1..9)}) }
+          before { allow(arguments).to receive(:call).and_return(the_result) }
+          before { allow(arguments).to receive(:remote).and_return(the_remote) }
 
-        %w(-a -r).each do |opt|
-          context "using #{opt}" do
-            [true, false].each do |result|
-              context "when the command returns #{result}" do
-                before { allow(heroku).to receive(:call).and_return(result) }
+          subject!(:the_output) { command.call(arguments) }
 
-                it { expect(command.call(*args, opt, remote)).to eq result }
-              end
-            end
-
-            describe "interactions" do
-              around { |b| Timecop.freeze Time.now, &b }
-              before { command.call(*args, opt, remote) }
-
-              it { expect(Hrk::Heroku).to have_received(:new).with(opt, remote) }
-              it { expect(heroku).to have_received(:call).with(*%w{whatever that:may -b}) }
-              it { expect(command.env).to have_received(:remote=).with([opt, remote]) }
-              it { expect(command.env).to have_received(:last_time=).with(Time.now) }
-            end
-          end
+          it { expect(the_output).to eq the_result }
+          it { expect(command.env).to have_received(:remote=).with(the_remote) }
+          it { expect(command.env).to have_received(:last_time=).with(Time.now) }
         end
       end
+    end
 
-      describe "edge cases" do
-        describe "a remote, nocommand" do
-          let(:remote) { "remote-#{rand(1..9)}" }
+    context "the command raises an error" do
+      before { allow(arguments).to receive(:call).and_raise("any error") }
 
-          %w(-a -r).each do |opt|
-            context "using #{opt}" do
-              [true, false].each do |result|
-                context "when the command returns #{result}" do
-                  before { allow(heroku).to receive(:call).and_return(result) }
+      before { expect(command.env).not_to receive(:remote=) }
+      before { expect(command.env).not_to receive(:last_time=) }
 
-                  it { expect(command.call(opt, remote)).to eq result }
-                end
-              end
-
-              describe "interactions" do
-                around { |b| Timecop.freeze Time.now, &b }
-                before { command.call(opt, remote) }
-
-                it { expect(Hrk::Heroku).to have_received(:new).with(opt, remote) }
-                it { expect(heroku).to have_received(:call).with no_args }
-                it { expect(command.env).to have_received(:remote=).with([opt, remote]) }
-                it { expect(command.env).to have_received(:last_time=).with(Time.now) }
-              end
-            end
-          end
-        end
-
-        describe "no remote, improper remote..." do
-          let(:other_args) { %W(something-#{rand(1..9)} -o r --another) }
-
-          before { expect(heroku).not_to receive(:call) }
-          before { expect(command.env).not_to receive(:remote=) }
-          before { expect(command.env).not_to receive(:last_time=) }
-
-          it { expect { command.call }.to raise_error ArgumentError }
-          it { expect { command.call(*other_args) }.to raise_error ArgumentError }
-          it { expect { command.call(*other_args, "-r") }.to raise_error ArgumentError }
-          it { expect { command.call(*other_args, "-a") }.to raise_error ArgumentError }
-          it { expect { command.call(*other_args, *%w(-r demo -r prod)) }.to raise_error ArgumentError }
-          it { expect { command.call(*other_args, *%w(-a app -a other-app)) }.to raise_error ArgumentError }
-          it { expect { command.call(*other_args, *%w(-r staging -a server)) }.to raise_error ArgumentError }
-          it { expect { command.call(*other_args, *%w(-a machine -r dennis)) }.to raise_error ArgumentError }
-        end
-      end
+      it { expect { command.call(arguments) }.to raise_error "any error" }
     end
   end
 end
